@@ -7,11 +7,12 @@ Install Elasticsearch on the system:
 
 ## Running the code
 Run the jar file in target/dic-0.0.1-SNAPSHOT.jar:
-> java -cp dic-0.0.1-SNAPSHOT.jar dic.SpiderTest "https://www.youtube.com/results?search_query=data+intensive+computing" 100 "hadoop"
+> java -cp dic-0.0.1-SNAPSHOT.jar dic.SpiderTest "https://www.youtube.com/results?search_query=data+intensive+computing" 100 "hadoop" "C:\elasticsearch-2.0.0\elasticsearch-2.0.0\config\elasticsearch.yml"
 
 param1 : URL<br>
 param2 : urlCount<br>
-param3 : searchQuery  
+param3 : searchQuery <br>
+param4 : path to elasticsearch.yml file
 
 
 ## Workflow
@@ -27,9 +28,9 @@ param3 : searchQuery
  2. Setup ElasticSearch on both the machines.<br>
  3. Run the jar file on both the machines with different seed URLs:<br>
      **machine 1:**<br>
-      *java -cp dic-0.0.1-SNAPSHOT.jar dic.SpiderTest "https://www.youtube.com/results?search_query=data+intensive+computing" 100 "hadoop"*<br>
+      *java -cp dic-0.0.1-SNAPSHOT.jar dic.SpiderTest "https://www.youtube.com/results?search_query=data+intensive+computing" 100 "hadoop" "C:\elasticsearch-2.0.0\elasticsearch-2.0.0\config\elasticsearch.yml"*<br>
 **machine 2:**<br>
- *java -cp dic-0.0.1-SNAPSHOT.jar dic.SpiderTest "https://www.youtube.com/results?search_query=hadoop" 100 "hadoop"*
+ *java -cp dic-0.0.1-SNAPSHOT.jar dic.SpiderTest "https://www.youtube.com/results?search_query=hadoop" 100 "hadoop" "C:\elasticsearch-2.0.0\elasticsearch-2.0.0\config\elasticsearch.yml"*
  4. Monitoring the cluster: Install **Sense** plugin for chrome browser on one of the systems  from:<br>
  https://chrome.google.com/webstore/detail/sense-beta/lhjgkmllcaadmopgmanpapmpjgmfcfig?hl=en <br>
  This tool helps in ElasticSearch cluster monitoring.<br> 
