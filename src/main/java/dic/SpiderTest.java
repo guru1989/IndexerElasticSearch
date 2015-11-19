@@ -12,7 +12,7 @@ public class SpiderTest
      */
     public static void main(String[] args)
     {
-        Spider spider = new Spider();
+        Spider spider = new Spider(args[3]);
         spider.crawler(args[0], Integer.parseInt(args[1]));
         spider.querySearch(args[2]);
     }

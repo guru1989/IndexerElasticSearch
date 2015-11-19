@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
@@ -17,6 +18,10 @@ import java.util.Map;
 
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 
@@ -27,11 +32,15 @@ public class Spider
   public static final String CLUSTER_NAME = "DIC";
   public static final String NODE_NAME = "dicNode";
   public static final String INDEX_NAME = "dicindex";	// should always be in lowercase
+  public static String CONFIG_FILE_PATH  ="";			// takes this from command line
   
   private Set<String> pagesVisited = new HashSet<String>();
   private List<String> pagesToVisit = new LinkedList<String>();
   
-  
+  Spider(String path)
+  {
+	  CONFIG_FILE_PATH = path;
+  }
 
   /**
    * Our main launching point for the Spider's functionality. Internally it creates spider legs
@@ -44,7 +53,14 @@ public class Spider
    */
   public void crawler(String url, int maxUrlCount)
   {
-	  Node node = nodeBuilder().clusterName(CLUSTER_NAME).settings(ImmutableSettings.settingsBuilder().put("node.name",NODE_NAME).build()).node();
+	  try {
+		InputStream is = new FileInputStream(CONFIG_FILE_PATH);
+		Settings NodeSettings = ImmutableSettings.settingsBuilder()
+	              .loadFromStream(CONFIG_FILE_PATH, is)
+	              .build();
+		  
+	
+	  Node node = nodeBuilder().settings(NodeSettings).node();
       Client client = node.client();
       while(this.pagesVisited.size() < maxUrlCount)
       {
@@ -69,24 +85,41 @@ public class Spider
       }
       System.out.println("\n**Done** Visited " + this.pagesVisited.size() + " web page(s)");
       client.close();
+	  } catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
   }
   
   void querySearch(String keyword)
   {
 	  
-	  Node node = nodeBuilder().clusterName(CLUSTER_NAME).settings(ImmutableSettings.settingsBuilder().put("node.name",NODE_NAME).build()).node();
-      Client client = node.client();
-      SearchResponse response = client.prepareSearch(INDEX_NAME)
-    	        .setQuery(QueryBuilders.matchQuery("_all", keyword))             // Query
-    	        .execute()
-    	        .actionGet();
-      SearchHits hits = response.getHits();
-      for(SearchHit hit:hits)
-      {
-    	  System.out.println(hit.sourceAsMap().get("url").toString()+" rank="+hit.getScore());
-      }
-      client.close();
-      System.out.println("Client close");
+	  try {
+			InputStream is = new FileInputStream(CONFIG_FILE_PATH);
+			Settings NodeSettings = ImmutableSettings.settingsBuilder()
+		              .loadFromStream(CONFIG_FILE_PATH, is)
+		              .build();
+			  
+		
+			  Node node = nodeBuilder().settings(NodeSettings).node();
+		      Client client = node.client();
+		      SearchResponse response = client.prepareSearch(INDEX_NAME)
+		    	        .setQuery(QueryBuilders.matchQuery("_all", keyword))             // Query
+		    	        .execute()
+		    	        .actionGet();
+		      SearchHits hits = response.getHits();
+		      for(SearchHit hit:hits)
+		      {
+		    	  System.out.println(hit.sourceAsMap().get("url").toString()+" rank="+hit.getScore());
+		      }
+		      client.close();
+		      System.out.println("Client close");
+	  }
+	  catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	  
   }
 
 
